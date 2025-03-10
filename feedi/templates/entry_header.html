@@ -40,7 +40,7 @@
             <span class="entry-metadata">
               <br/>
               )
-              <small class="has-text-grey-light"><span title="{{ entry.display_date.isoformat() }}">{{ entry.display_date | humanize }}</span> {% if entry.username %}· {{ entry.username}}{%endif%} {%if entry.target_url %}· {{ entry.target_url | url_domain}}{% endif %}{% if entry.feed.name %}· <a href="{{url_for('entry_list', feed_name=feed.name)}}">{{ entry.feed.name}}{%endif%}</a></small>
+              <small class="has-text-grey-light"><span title="{{ entry.display_date.isoformat() }}">{{ entry.display_date | humanize }}</span> {% if entry.username %}· {{ entry.username}}{%endif%} {%if entry.target_url %}· {{ entry.target_url | url_domain}}{% endif %}{% if entry.feed.name %}· <a href="{{url_for('entry_list', feed_name=entry.feed.name)}}">{{ entry.feed.name}}{%endif%}</a></small>
             </span>
         </p>
     </div>
