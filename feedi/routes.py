@@ -109,7 +109,7 @@ def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, i
         page_num = int(page_num)
         start_at = datetime.datetime.fromtimestamp(float(start_at))
     else:
-        start_at = filters.get("start_date", datetime.datetime.utcnow())
+        start_at = datetime.datetime.utcnow()
         page_num = 1
 
     query = models.Entry.sorted_by(user_id, ordering, start_at, **filters)
