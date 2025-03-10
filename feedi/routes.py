@@ -38,7 +38,7 @@ def entry_list(**filters):
 
     is_mixed_feed_list = filters.get("folder") or (flask.request.path == "/" and not filters.get("text"))
 
-    (entries, next_page) = fetch_entries_page(page, current_user.id, ordering, hide_seen, is_mixed_feed_list, **filters)
+    (entries, next_page) = fetch_entries_page(page, current_user.id, ordering, hide_seen, is_mixed_feed_list, True, **filters)
 
     if page:
         # if it's a paginated request, render a single page of the entry list
@@ -63,17 +63,17 @@ def latest_entries():
     now = datetime.datetime.utcnow()
     twenty_four_hours_ago = now - timedelta(hours=24)
 
-    filters = {"newer_than": twenty_four_hours_ago, "no_page": True}
+    filters = {"newer_than": twenty_four_hours_ago}
     ordering = models.Entry.ORDER_RECENCY  # Always use recency for latest entries
 
-    (entries, next_page) = fetch_entries_page(None, current_user.id, ordering, False, True, **filters)
+    (entries, next_page) = fetch_entries_page(None, current_user.id, ordering, False, True, False, **filters)
 
     return flask.render_template(
         "latest.html",
         entries=entries
     )
 
-def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, is_mixed_feed_list, **filters):
+def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, is_mixed_feed_list, pagination, **filters):
     """
     Fetch a page of entries from db, optionally applying query filters (text search, feed, folder, etc.).
     The entry ordering depends on current filters and user session settings.
@@ -103,12 +103,12 @@ def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, i
         page_num = 1
 
     query = models.Entry.sorted_by(user_id, ordering, start_at, **filters)
-    if filters["no_page"]:
-        entry_page = db.paginate(query, per_page=100000, page=page_num)
-        next_page = None
-    else:
+    if pagination:
         entry_page = db.paginate(query, per_page=app.config["ENTRY_PAGE_SIZE"], page=page_num)
         next_page = f"{start_at.timestamp()}:{page_num + 1}" if entry_page.has_next else None
+    else:
+        entry_page = db.paginate(query, per_page=100000, page=page_num)
+        next_page = None
 
     if entry_page.has_prev:
         # mark the previous page as viewed. The rationale is that the user fetches
