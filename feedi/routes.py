@@ -1,4 +1,5 @@
 import datetime
+from datetime import timedelta
 
 import flask
 import sqlalchemy as sa
@@ -53,6 +54,34 @@ def entry_list(**filters):
         filters=filters,
     )
 
+@app.route("/latest")
+@login_required
+def latest_entries():
+    """
+    Display the latest 24h entries from all feeds.
+    """
+    now = datetime.datetime.utcnow()
+    twenty_four_hours_ago = now - timedelta(hours=24)
+
+    filters = {"start_date": twenty_four_hours_ago}
+
+    page = flask.request.args.get("page")
+    hide_seen = flask.session.get("hide_seen", True)
+    ordering = models.Entry.ORDER_RECENCY  # Always use recency for latest entries
+
+    (entries, next_page) = fetch_entries_page(page, current_user.id, ordering, hide_seen, True, **filters)
+
+    if page:
+        return flask.render_template("entry_list_page.html", entries=entries, filters=filters, next_page=next_page)
+
+    return flask.render_template(
+        "entry_list.html",
+        pinned=models.Entry.select_pinned(current_user.id, **filters),
+        entries=entries,
+        next_page=next_page,
+        is_mixed_feed_view=True,
+        filters=filters,
+    )
 
 def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, is_mixed_feed_list, **filters):
     """
@@ -98,7 +127,6 @@ def fetch_entries_page(page_arg, user_id, ordering_setting, hide_seen_setting, i
         db.session.commit()
 
     return entry_page, next_page
-
 
 @app.get("/autocomplete")
 @login_required
