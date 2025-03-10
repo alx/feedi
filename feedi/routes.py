@@ -63,7 +63,7 @@ def latest_entries():
     now = datetime.datetime.utcnow()
     twenty_four_hours_ago = now - timedelta(hours=24)
 
-    filters = {"start_date": twenty_four_hours_ago}
+    filters = {"newer_than": twenty_four_hours_ago}
 
     page = flask.request.args.get("page")
     hide_seen = flask.session.get("hide_seen", True)
