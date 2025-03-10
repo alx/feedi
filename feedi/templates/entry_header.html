@@ -39,7 +39,7 @@
             </span>
             <span class="entry-metadata">
                 <br/>
-                <small class="has-text-grey-light"><span title="{{ entry.display_date.isoformat() }}">{{ entry.display_date | humanize }}</span> {% if entry.username %}· {{ entry.username}}{%endif%} {%if entry.target_url %}· {{ entry.target_url | url_domain}}{% endif %}</small>
+                <small class="has-text-grey-light"><span title="{{ entry.display_date.isoformat() }}">{{ entry.display_date | humanize }}</span> {% if entry.username %}· {{ entry.username}}{%endif%} {%if entry.target_url %}· {{ entry.target_url | url_domain}}{% endif %}{% if entry.name %}· {{ entry.name}}{%endif%}</small>
             </span>
         </p>
     </div>
