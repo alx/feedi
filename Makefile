@@ -8,7 +8,7 @@ export FLASK_ENV ?= development
 all: deps node_modules
 
 venv:
-	python -m venv venv
+	python3 -m venv venv
 	$(venv) pip install uv
 
 deps: venv
